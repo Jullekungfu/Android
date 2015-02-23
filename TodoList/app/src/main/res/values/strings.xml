@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Deadlines</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <color name="material_blue_500">#2196f3</color>
+    <color name="material_blue_700">#1976d2</color>
+    <color name="material_green_A200">#69f0ae</color>
+    <color name="material_white">#ffffff</color>
+
+</resources>
