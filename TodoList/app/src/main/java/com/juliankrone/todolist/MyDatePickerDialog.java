@@ -9,13 +9,13 @@ import android.content.DialogInterface;
  * OnDateSetListener only when when pressing OK button, and skips event when closing with
  * BACK key or by tapping outside a dialog.
  */
-public class IBSDatePickerDialog extends DatePickerDialog {
+public class MyDatePickerDialog extends DatePickerDialog {
 
-    public IBSDatePickerDialog(final Context context, final OnDateSetListener callBack, final int year, final int monthOfYear, final int dayOfMonth) {
+    public MyDatePickerDialog(final Context context, final OnDateSetListener callBack, final int year, final int monthOfYear, final int dayOfMonth) {
         super(context, callBack, year, monthOfYear, dayOfMonth);
     }
 
-    public IBSDatePickerDialog(final Context context, final int theme, final OnDateSetListener callBack, final int year, final int monthOfYear, final int dayOfMonth) {
+    public MyDatePickerDialog(final Context context, final int theme, final OnDateSetListener callBack, final int year, final int monthOfYear, final int dayOfMonth) {
         super(context, theme, callBack, year, monthOfYear, dayOfMonth);
     }
 

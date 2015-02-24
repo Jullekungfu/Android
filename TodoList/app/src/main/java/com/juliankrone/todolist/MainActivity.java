@@ -1,6 +1,5 @@
 package com.juliankrone.todolist;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -15,8 +14,6 @@ import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
-
-import com.melnykov.fab.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -128,7 +125,7 @@ public class MainActivity extends ActionBarActivity {
         public Dialog onCreateDialog(final Bundle savedInstanceState) {
 
             Calendar cal = Calendar.getInstance();
-            IBSDatePickerDialog dlg = new IBSDatePickerDialog(getActivity(), this, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+            MyDatePickerDialog dlg = new MyDatePickerDialog(getActivity(), this, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
 
             // Add Cancel button into dialog
             dlg.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", (DialogInterface.OnClickListener) null);
@@ -151,7 +148,7 @@ public class MainActivity extends ActionBarActivity {
         public Dialog onCreateDialog(final Bundle savedInstanceState) {
 
             Calendar cal = Calendar.getInstance();
-            IBSTimePickerDialog dlg = new IBSTimePickerDialog(getActivity(), this, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
+            MyTimePickerDialog dlg = new MyTimePickerDialog(getActivity(), this, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
 
             // Add Cancel button into dialog
             dlg.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", (DialogInterface.OnClickListener) null);

@@ -10,13 +10,13 @@ import android.text.format.DateFormat;
  * OnTimeSetListener only when when pressing OK button, and skips event when closing with
  * BACK key or by tapping outside a dialog.
  */
-public class IBSTimePickerDialog extends TimePickerDialog {
+public class MyTimePickerDialog extends TimePickerDialog {
 
-    public IBSTimePickerDialog(final Context context, final TimePickerDialog.OnTimeSetListener callBack, final int hour, final int minute) {
+    public MyTimePickerDialog(final Context context, final TimePickerDialog.OnTimeSetListener callBack, final int hour, final int minute) {
         super(context, callBack, hour, minute, DateFormat.is24HourFormat(context));
     }
 
-    public IBSTimePickerDialog(final Context context, final int theme, final OnTimeSetListener callBack, final int hour, final int minute) {
+    public MyTimePickerDialog(final Context context, final int theme, final OnTimeSetListener callBack, final int hour, final int minute) {
         super(context, theme, callBack, hour, minute, DateFormat.is24HourFormat(context));
     }
 
