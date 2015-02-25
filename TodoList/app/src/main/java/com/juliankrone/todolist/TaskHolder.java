@@ -12,6 +12,7 @@ public class TaskHolder extends RecyclerView.ViewHolder {
     protected TextView date;
     protected ImageView dlt;
     protected RelativeLayout relativeLayout;
+    protected boolean done;
 
     public TaskHolder(View view) {
         super(view);
@@ -19,17 +20,18 @@ public class TaskHolder extends RecyclerView.ViewHolder {
         this.date = (TextView) view.findViewById(R.id.task_deadline_string);
         this.dlt = (ImageView) view.findViewById(R.id.delete_btn);
         this.relativeLayout = (RelativeLayout) view.findViewById(R.id.task_layout);
+        this.done = false;
+
 
         relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String tsk = name.getText().toString();
-                if(tsk.startsWith("DONE ")){
-                    name.setText(tsk.substring(5));
+                if(done){
+                    relativeLayout.setBackgroundColor(relativeLayout.getResources().getColor(R.color.transparent));
                 } else {
-                    name.setText("DONE " + tsk);
+                    relativeLayout.setBackgroundColor(relativeLayout.getResources().getColor(R.color.material_grey_400));
                 }
-
+                done = !done;
             }
         });
 
