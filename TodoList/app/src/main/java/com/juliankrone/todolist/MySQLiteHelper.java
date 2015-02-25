@@ -11,6 +11,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_TASK_NAME = "task";
     public static final String COLUMN_TASK_DEADLINE = "deadline";
+    public static final String COLUMN_TASK_DONE = "done";
 
     private static final String DATABASE_NAME = "tasks.db";
     private static final int DATABASE_VERSION = 1;
@@ -20,7 +21,8 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
             + TABLE_TASKS + "(" + COLUMN_ID
             + " integer primary key autoincrement, " + COLUMN_TASK_NAME
             + " text not null, " + COLUMN_TASK_DEADLINE
-            + " BIGINT);";
+            + " BIGINT, " + COLUMN_TASK_DONE
+            + " BOOLEAN);";
 
     public MySQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

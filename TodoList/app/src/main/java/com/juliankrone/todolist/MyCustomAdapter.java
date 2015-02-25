@@ -76,12 +76,6 @@ public class MyCustomAdapter extends RecyclerView.Adapter<TaskHolder> {
         return list.size();
     }
 
-
-
-
-
-
-
     //@Override
     public Object getItem(int pos) {
         return list.get(pos);

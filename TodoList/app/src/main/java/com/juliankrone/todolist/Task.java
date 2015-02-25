@@ -4,19 +4,21 @@ public class Task {
     private long id;
     private String name;
     private long deadline;
+    private boolean done;
 
-    public Task(long id, String name, long deadline){
+    public Task(long id, String name, long deadline, boolean done){
         this.id = id;
         this.name = name;
         this.deadline = deadline;
+        this.done = done;
     }
 
     public void setName(String newName){
         this.name = newName;
     }
 
-    public void setDeadline(int newDeadline){
-        this.deadline = deadline;
+    public boolean getDone(){
+        return done;
     }
 
     public String getName(){
@@ -27,7 +29,6 @@ public class Task {
         return deadline;
     }
 
-    // Will be used by the ArrayAdapter in the ListView
     @Override
     public String toString() {
         return name + " " + deadline;

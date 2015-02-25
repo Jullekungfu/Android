@@ -17,7 +17,7 @@ public class TasksDataSource {
     private SQLiteDatabase database;
     private MySQLiteHelper dbHelper;
     private String[] allColumns = { MySQLiteHelper.COLUMN_ID,
-            MySQLiteHelper.COLUMN_TASK_NAME, MySQLiteHelper.COLUMN_TASK_DEADLINE };
+            MySQLiteHelper.COLUMN_TASK_NAME, MySQLiteHelper.COLUMN_TASK_DEADLINE, MySQLiteHelper.COLUMN_TASK_DONE };
 
     public TasksDataSource(Context context) {
         dbHelper = new MySQLiteHelper(context);
@@ -31,10 +31,11 @@ public class TasksDataSource {
         dbHelper.close();
     }
 
-    public Task createTask(String name, long deadline) {
+    public Task createTask(String name, long deadline, boolean done) {
         ContentValues values = new ContentValues();
         values.put(MySQLiteHelper.COLUMN_TASK_NAME, name);
         values.put(MySQLiteHelper.COLUMN_TASK_DEADLINE, deadline/1000);
+        values.put(MySQLiteHelper.COLUMN_TASK_DONE, done ? 1 : 0);
         long insertId = database.insert(MySQLiteHelper.TABLE_TASKS, null,
                 values);
         Cursor cursor = database.query(MySQLiteHelper.TABLE_TASKS,
@@ -77,7 +78,8 @@ public class TasksDataSource {
         long id = cursor.getLong(0);
         String name = cursor.getString(1);
         int deadline = cursor.getInt(2);
-        Task task = new Task(id, name, deadline);
+        int done = cursor.getInt(3);
+        Task task = new Task(id, name, deadline, done==1);
         return task;
     }
 }

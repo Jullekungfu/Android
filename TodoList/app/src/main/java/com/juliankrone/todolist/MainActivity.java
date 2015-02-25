@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -74,7 +76,7 @@ public class MainActivity extends ActionBarActivity {
         this.nMin = minute;
 
         GregorianCalendar date = new GregorianCalendar(nYear, nMonth, nDay, nHour, nMin);
-        Task task = datasource.createTask(nTaskName.trim().length()>0 ? nTaskName : "Example task", date.getTimeInMillis());
+        Task task = datasource.createTask(nTaskName.trim().length()>0 ? nTaskName : "Example task", date.getTimeInMillis(), false);
         mAdapter.add(task);
     }
 
@@ -91,25 +93,25 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public static class TaskNameDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
-
+        private View v;
         private EditText editName;
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            editName = new EditText(getActivity());
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+            this.v = inflater.inflate(R.layout.fragment_task_name, null);
+            builder.setView(v);
+            editName = (EditText) v.findViewById(R.id.fragment_task_name_input);
 
-            return new AlertDialog.Builder(getActivity())
-                    .setTitle("Task name")
-                    .setPositiveButton("OK", this)
-                    .setNegativeButton("CANCEL", null)
-                    .setView(editName)
-                    .create();
+            return builder.setTitle("Task name").setPositiveButton("OK", this).setNegativeButton("CANCEL", null).create();
         }
 
         @Override
         public void onClick(DialogInterface dialog, int position) {
 
             if(position == DialogInterface.BUTTON_POSITIVE) {
+                Log.d("edit", String.valueOf(editName));
                 String value = editName.getText().toString();
                 ((MainActivity)getActivity()).onNameSet(value);
                 DialogFragment dateFragment = new DatePickerFragment();
