@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:key="pref_notifications"
+        android:title="@string/pref_notifications"
+        android:defaultValue="true" />
+        <ListPreference
+        android:dependency="pref_notifications"
+        android:key="pref_notificationTime"
+        android:title="@string/pref_notificationTime"
+        android:dialogTitle="@string/pref_notificationTime"
+        android:entries="@array/pref_notificationTime_entries"
+        android:entryValues="@array/pref_notificationTime_values"
+        android:defaultValue="@string/pref_notificationTime_default" />
+</PreferenceScreen>
