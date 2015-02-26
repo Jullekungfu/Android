@@ -20,8 +20,8 @@ public class TaskHolder extends RecyclerView.ViewHolder {
         this.date = (TextView) view.findViewById(R.id.task_deadline_string);
         this.dlt = (ImageView) view.findViewById(R.id.delete_btn);
         this.relativeLayout = (RelativeLayout) view.findViewById(R.id.task_layout);
-        this.done = false;
 
+/*
 
         relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -34,6 +34,7 @@ public class TaskHolder extends RecyclerView.ViewHolder {
                 done = !done;
             }
         });
+*/
 
     }
 

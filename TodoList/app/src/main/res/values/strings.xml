@@ -10,5 +10,6 @@
     <color name="material_white">#ffffff</color>
     <color name="material_grey_400">#bdbdbd</color>
     <color name="transparent">#00000000</color>
+    <color name="semi_transparent">#00000011</color>
 
 </resources>

@@ -32,9 +32,17 @@ public class MyCustomAdapter extends RecyclerView.Adapter<TaskHolder> {
 
     private int findPos(Task task){
         long d = task.getDeadline();
+        boolean done = task.getDone();
         for(int i = list.size()-1; i>= 0; i--){
-            if(list.get(i).getDeadline()<d){
-                return i+1;
+            Task t = list.get(i);
+            if(done){
+                if(t.getDone() && t.getDeadline() < d || !t.getDone()){
+                    return i+1;
+                }
+            } else {
+                if(!t.getDone() && t.getDeadline() < d){
+                    return i+1;
+                }
             }
         }
         return 0;
@@ -50,8 +58,17 @@ public class MyCustomAdapter extends RecyclerView.Adapter<TaskHolder> {
     public void onBindViewHolder(final TaskHolder holder, final int position) {
         Task task = list.get(position);
         holder.name.setText(task.getName());
+        holder.done = task.getDone();
+        if(holder.done) {
+            holder.name.setAlpha(0.2f);
+            holder.date.setAlpha(0.2f);
+        } else {
+            holder.name.setAlpha(0.9f);
+            holder.date.setAlpha(0.8f);
+        }
+
         Date date = new Date(task.getDeadline()*1000);
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM, HH:mm");
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yy, HH:mm");
         holder.date.setText(format.format(date));
 
         holder.dlt.setOnClickListener(new View.OnClickListener() {
@@ -61,6 +78,23 @@ public class MyCustomAdapter extends RecyclerView.Adapter<TaskHolder> {
                 dataSource.deleteTask(list.remove(position)); //or some other task
                 notifyItemRemoved(position);
                 notifyItemRangeChanged(position, getItemCount());
+            }
+        });
+
+        holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Task newTask = list.remove(position);
+                dataSource.deleteTask(newTask);
+                notifyItemRemoved(position);
+                notifyItemRangeChanged(position, getItemCount());
+
+                String name = newTask.getName();
+                long date = newTask.getDeadline();
+                boolean done = !newTask.getDone();
+                Task nTask = dataSource.createTask(name, date*1000, done);
+                add(nTask);
             }
         });
     }
@@ -74,43 +108,5 @@ public class MyCustomAdapter extends RecyclerView.Adapter<TaskHolder> {
     @Override
     public int getItemCount() {
         return list.size();
-    }
-
-    //@Override
-    public Object getItem(int pos) {
-        return list.get(pos);
-    }
-
-    //@Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        View view = convertView;
-        if (view == null) {
-            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inflater.inflate(R.layout.task_button, null);
-        }
-
-        //Handle TextView and display string from your list
-        TextView taskNameText = (TextView)view.findViewById(R.id.task_name_string);
-        taskNameText.setText(list.get(position).getName());
-
-        Date date = new Date(list.get(position).getDeadline()*1000);
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM, HH:mm");
-        //Handle TextView and display string from your list
-        TextView taskDeadlineText = (TextView)view.findViewById(R.id.task_deadline_string);
-        taskDeadlineText.setText(format.format(date));
-
-        //Handle buttons and add onClickListeners
-        Button deleteBtn = (Button)view.findViewById(R.id.delete_btn);
-
-        deleteBtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                //do something
-                dataSource.deleteTask(list.remove(position)); //or some other task
-                notifyDataSetChanged();
-            }
-        });
-
-        return view;
     }
 }
