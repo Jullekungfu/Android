@@ -48,6 +48,16 @@ public class MyCustomAdapter extends RecyclerView.Adapter<TaskHolder> {
         return 0;
     }
 
+    public ArrayList<Task> getActiveTasks(){
+        ArrayList<Task> ds = new ArrayList<>();
+        for(Task t : list){
+            if (!t.getDone()){
+                ds.add(t);
+            }
+        }
+        return ds;
+    }
+
     @Override
     public TaskHolder onCreateViewHolder(ViewGroup parent, int i) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.task_button, parent, false);

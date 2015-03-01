@@ -1,14 +1,20 @@
 package com.juliankrone.todolist;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,6 +29,7 @@ import android.widget.EditText;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -83,6 +90,20 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+    public void remind (Task task){
+
+        Intent alarmIntent = new Intent(MainActivity.this, AlarmReceiver.class);
+        alarmIntent.putExtra("message", task.getName());
+        alarmIntent.putExtra("title", "Upcoming deadline");
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        //TODO: For demo set after 5 seconds.
+        alarmManager.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 5 * 1000, pendingIntent);
+
+    }
+
     public void onClick(View view) {
         DialogFragment nameFragment = new TaskNameDialogFragment();
         nameFragment.show(getFragmentManager(), "taskName");
@@ -105,6 +126,7 @@ public class MainActivity extends ActionBarActivity {
         GregorianCalendar date = new GregorianCalendar(nYear, nMonth, nDay, nHour, nMin);
         Task task = datasource.createTask(nTaskName.trim().length()>0 ? nTaskName : "Example task", date.getTimeInMillis(), false);
         mAdapter.add(task);
+        remind(task);
     }
 
     @Override
@@ -115,6 +137,9 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     protected void onPause() {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean syncConnPref = sharedPref.getBoolean("pref_notifications", false);
+        Toast.makeText(this, String.valueOf(syncConnPref), Toast.LENGTH_SHORT).show();
         datasource.close();
         super.onPause();
     }
