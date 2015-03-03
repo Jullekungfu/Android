@@ -26,8 +26,6 @@ public class AlarmReceiver extends BroadcastReceiver {
         NotificationCompat.BigTextStyle style = new NotificationCompat.BigTextStyle();
         style.bigText(message);
 
-        //int resourceId = Resource.Drawable.Car;
-
         NotificationCompat.WearableExtender wearableExtender = new NotificationCompat.WearableExtender()
                 .setBackground(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher))
                 ;
@@ -40,11 +38,9 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .setContentText(message)
                 .setStyle(style)
                 .setWhen(System.currentTimeMillis())
-                .setAutoCancel(true)
                 .extend(wearableExtender);
 
         Notification notification = builder.build();
         manager.notify(0, notification);
-
     }
 }
