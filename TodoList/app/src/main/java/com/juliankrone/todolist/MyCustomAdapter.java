@@ -107,6 +107,8 @@ public class MyCustomAdapter extends RecyclerView.Adapter<TaskHolder> {
                 boolean done = !newTask.getDone();
                 Task nTask = dataSource.createTask(name, date*1000, done);
                 add(nTask);
+                if (!done)
+                    ((MainActivity)context).remind(nTask);
             }
         });
     }

@@ -55,7 +55,6 @@ public class MainActivity extends ActionBarActivity {
     private RecyclerView.LayoutManager mLayoutManager;
 
     private boolean notifications;
-    private String notificationTime;
 
 
     public static final String KEY_PREF_NOTIFICATIONS = "pref_notifications";
@@ -95,7 +94,6 @@ public class MainActivity extends ActionBarActivity {
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         notifications = sharedPref.getBoolean(KEY_PREF_NOTIFICATIONS, false);
-        notificationTime = sharedPref.getString(KEY_PREF_NOTIFICATION_TIME, "");
     }
 
     @Override
@@ -126,7 +124,7 @@ public class MainActivity extends ActionBarActivity {
         }
         if(notifyPref){
             for(Task t : mAdapter.getActiveTasks()){
-                remind(t, getDelay());
+                remind(t);
             }
         }
     }
@@ -165,9 +163,9 @@ public class MainActivity extends ActionBarActivity {
      * @param task the current task that should attach a notification
      */
 
-    public void remind (Task task, long delay){
-        long nTime = (task.getDeadline()*1000)-delay;
-        if(nTime > System.currentTimeMillis()) {
+    public void remind (Task task){
+        long nTime = (task.getDeadline()*1000)-getDelay();
+        if(notifications && nTime > System.currentTimeMillis()) {
 
             Intent alarmIntent = new Intent(this, AlarmReceiver.class);
             alarmIntent.putExtra("message", task.getName());
@@ -213,7 +211,7 @@ public class MainActivity extends ActionBarActivity {
         mAdapter.add(task);
 
         if(notifications)
-            remind(task, getDelay());
+            remind(task);
     }
 
     @Override
