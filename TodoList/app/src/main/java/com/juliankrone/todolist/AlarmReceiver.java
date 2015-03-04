@@ -31,12 +31,13 @@ public class AlarmReceiver extends BroadcastReceiver {
                 ;
 
         //Generate a notification with just short text and small icon
-        NotificationCompat.Builder builder = new NotificationCompat.Builder (context)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
                 .setContentIntent(contentIntent)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setContentTitle(title)
                 .setContentText(message)
                 .setStyle(style)
+                .setAutoCancel(true)
                 .setWhen(System.currentTimeMillis())
                 .extend(wearableExtender);
 

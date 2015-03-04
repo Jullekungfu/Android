@@ -1,6 +1,8 @@
 package com.juliankrone.todolist;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.support.v7.app.ActionBarActivity;
 
@@ -15,7 +17,6 @@ public class SettingsActivity extends ActionBarActivity {
 
         getFragmentManager().beginTransaction().replace(R.id.content_frame, new SettingsFragment()).commit();
     }
-
 
     public static class SettingsFragment extends PreferenceFragment {
         @Override

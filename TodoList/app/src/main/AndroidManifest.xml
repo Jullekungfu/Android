@@ -32,6 +32,12 @@
                 android:value="com.juliankrone.todolist.MainActivity" />
 
         </activity>
+        <receiver android:name="com.juliankrone.todolist.AlarmReceiver"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="com.juliankrone.alarm.REMINDER" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

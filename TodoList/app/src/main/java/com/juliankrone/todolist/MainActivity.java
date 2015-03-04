@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -13,8 +14,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.preference.ListPreference;
+import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -48,6 +52,22 @@ public class MainActivity extends ActionBarActivity {
     private RecyclerView mRecyclerView;
     private MyCustomAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+
+    public static final String KEY_PREF_NOTIFICATIONS = "pref_notifications";
+    public static final String KEY_PREF_NOTIFICATION_TIME = "pref_notification_time";
+
+    private final SharedPreferences.OnSharedPreferenceChangeListener mPrefsListener =
+            new SharedPreferences.OnSharedPreferenceChangeListener() {
+                @Override
+                public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+                                                      String key)
+                {
+                    settingsChanged();
+                }
+
+            };
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,18 +110,41 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+    private void settingsChanged() {
+        Log.d("Settings", "Changed");
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean notifyPref = sharedPref.getBoolean(KEY_PREF_NOTIFICATIONS, false);
+        String notifyTimePref = sharedPref.getString(KEY_PREF_NOTIFICATION_TIME, "");
+        Log.d("notify", String.valueOf(notifyPref));
+        Log.d("time", notifyTimePref);
+    }
+
+    /**
+     * Create future notification when:
+     * a task is created more than [notifyTime] in the future
+     * notifications are activated and task deadline is more than [notifyTime] in the future
+     * @param task the current task that should attach a notification
+     */
+
     public void remind (Task task){
 
-        Intent alarmIntent = new Intent(MainActivity.this, AlarmReceiver.class);
+        Intent alarmIntent = new Intent(this, AlarmReceiver.class);
         alarmIntent.putExtra("message", task.getName());
         alarmIntent.putExtra("title", "Upcoming deadline");
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, (int) task.getId(), alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
-        //TODO: For demo set after 5 seconds.
-        alarmManager.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 5 * 1000, pendingIntent);
+        //TODO: Change 5 secs into actual wanted time.
+        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (5 * 1000), pendingIntent);
+        //remove(task);
 
+    }
+
+    public void remove (Task task){
+        Intent alarmIntent = new Intent(this, AlarmReceiver.class);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(PendingIntent.getBroadcast(this, (int) task.getId(), alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT));
     }
 
     public void onClick(View view) {
@@ -131,18 +174,19 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     protected void onResume() {
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .registerOnSharedPreferenceChangeListener(mPrefsListener);
         datasource.open();
         super.onResume();
     }
 
     @Override
     protected void onPause() {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean syncConnPref = sharedPref.getBoolean("pref_notifications", false);
-        Toast.makeText(this, String.valueOf(syncConnPref), Toast.LENGTH_SHORT).show();
+        //PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(mPrefsListener);
         datasource.close();
         super.onPause();
     }
+
 
     public static class TaskNameDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
         private View v;
