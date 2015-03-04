@@ -6,7 +6,7 @@
         android:defaultValue="true" />
         <ListPreference
         android:dependency="pref_notifications"
-        android:key="pref_notificationTime"
+        android:key="pref_notification_time"
         android:title="@string/pref_notificationTime"
         android:dialogTitle="@string/pref_notificationTime"
         android:entries="@array/pref_notificationTime_entries"

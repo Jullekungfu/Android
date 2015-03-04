@@ -84,8 +84,9 @@ public class MyCustomAdapter extends RecyclerView.Adapter<TaskHolder> {
         holder.dlt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //do something
-                dataSource.deleteTask(list.remove(position)); //or some other task
+                Task tsk = list.remove(position);
+                dataSource.deleteTask(tsk);
+                ((MainActivity)context).remove(tsk);
                 notifyItemRemoved(position);
                 notifyItemRangeChanged(position, getItemCount());
             }
@@ -97,6 +98,7 @@ public class MyCustomAdapter extends RecyclerView.Adapter<TaskHolder> {
 
                 Task newTask = list.remove(position);
                 dataSource.deleteTask(newTask);
+                ((MainActivity)context).remove(newTask);
                 notifyItemRemoved(position);
                 notifyItemRangeChanged(position, getItemCount());
 

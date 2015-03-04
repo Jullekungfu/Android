@@ -36,6 +36,7 @@ import android.widget.Toast;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 
@@ -52,6 +53,10 @@ public class MainActivity extends ActionBarActivity {
     private RecyclerView mRecyclerView;
     private MyCustomAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+
+    private boolean notifications;
+    private String notificationTime;
+
 
     public static final String KEY_PREF_NOTIFICATIONS = "pref_notifications";
     public static final String KEY_PREF_NOTIFICATION_TIME = "pref_notification_time";
@@ -87,11 +92,14 @@ public class MainActivity extends ActionBarActivity {
 
         mAdapter = new MyCustomAdapter(values, datasource, this);
         mRecyclerView.setAdapter(mAdapter);
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        notifications = sharedPref.getBoolean(KEY_PREF_NOTIFICATIONS, false);
+        notificationTime = sharedPref.getString(KEY_PREF_NOTIFICATION_TIME, "");
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu items for use in the action bar
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
         return super.onCreateOptionsMenu(menu);
@@ -99,7 +107,6 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle presses on the action bar items
         switch (item.getItemId()) {
             case R.id.action_settings:
                 Intent settingsIntent = new Intent(this, SettingsActivity.class);
@@ -110,13 +117,45 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+    //5min</item><item name="30m">30min</item><item name="1h">1h</item><item name="6h">6h</item><item name="24h">24h
     private void settingsChanged() {
-        Log.d("Settings", "Changed");
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         boolean notifyPref = sharedPref.getBoolean(KEY_PREF_NOTIFICATIONS, false);
+        for(Task t : mAdapter.getActiveTasks()){
+            remove(t);
+        }
+        if(notifyPref){
+            for(Task t : mAdapter.getActiveTasks()){
+                remind(t, getDelay());
+            }
+        }
+    }
+
+    private long getDelay() {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         String notifyTimePref = sharedPref.getString(KEY_PREF_NOTIFICATION_TIME, "");
-        Log.d("notify", String.valueOf(notifyPref));
-        Log.d("time", notifyTimePref);
+        long timeDiff;
+        switch (notifyTimePref) {
+            case "5min":
+                timeDiff = 5 * 60 * 1000;
+                break;
+            case "30min":
+                timeDiff = 30 * 60 * 1000;
+                break;
+            case "1h":
+                timeDiff = 1 * 60 * 60 * 1000;
+                break;
+            case "6h":
+                timeDiff = 6 * 60 * 60 * 1000;
+                break;
+            case "24h":
+                timeDiff = 24 * 60 * 60 * 1000;
+                break;
+            default:
+                timeDiff = 0;
+
+        }
+        return timeDiff;
     }
 
     /**
@@ -126,18 +165,21 @@ public class MainActivity extends ActionBarActivity {
      * @param task the current task that should attach a notification
      */
 
-    public void remind (Task task){
+    public void remind (Task task, long delay){
+        long nTime = (task.getDeadline()*1000)-delay;
+        if(nTime > System.currentTimeMillis()) {
 
-        Intent alarmIntent = new Intent(this, AlarmReceiver.class);
-        alarmIntent.putExtra("message", task.getName());
-        alarmIntent.putExtra("title", "Upcoming deadline");
+            Intent alarmIntent = new Intent(this, AlarmReceiver.class);
+            alarmIntent.putExtra("message", task.getName());
+            alarmIntent.putExtra("title", "Upcoming deadline");
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, (int) task.getId(), alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, (int) task.getId(), alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
-        //TODO: Change 5 secs into actual wanted time.
-        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (5 * 1000), pendingIntent);
-        //remove(task);
+            alarmManager.set(AlarmManager.RTC_WAKEUP, nTime, pendingIntent);
+
+            Log.d("Alarm set at", new Date(nTime).toString());
+        }
 
     }
 
@@ -169,7 +211,9 @@ public class MainActivity extends ActionBarActivity {
         GregorianCalendar date = new GregorianCalendar(nYear, nMonth, nDay, nHour, nMin);
         Task task = datasource.createTask(nTaskName.trim().length()>0 ? nTaskName : "Example task", date.getTimeInMillis(), false);
         mAdapter.add(task);
-        remind(task);
+
+        if(notifications)
+            remind(task, getDelay());
     }
 
     @Override
