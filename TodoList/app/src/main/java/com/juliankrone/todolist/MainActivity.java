@@ -2,23 +2,15 @@ package com.juliankrone.todolist;
 
 import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.SystemClock;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -28,19 +20,18 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.TimePicker;
-import android.widget.Toast;
 
-import java.text.Normalizer;
+import com.android.datetimepicker.date.DatePickerDialog;
+import com.android.datetimepicker.time.RadialPickerLayout;
+import com.android.datetimepicker.time.TimePickerDialog;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
 
     private TasksDataSource datasource;
     private String nTaskName;
@@ -70,8 +61,6 @@ public class MainActivity extends ActionBarActivity {
                 }
 
             };
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -196,24 +185,6 @@ public class MainActivity extends ActionBarActivity {
         this.nTaskName = name;
 
     }
-    public void onDateSet(int year, int month, int day){
-        this.nYear = year;
-        this.nMonth = month;
-        this.nDay = day;
-    }
-
-    public void onTimeSet(int hour, int minute){
-        this.nHour = hour;
-        this.nMin = minute;
-
-        GregorianCalendar date = new GregorianCalendar(nYear, nMonth, nDay, nHour, nMin);
-        Task task = datasource.createTask(nTaskName.trim().length()>0 ? nTaskName : "Example task", date.getTimeInMillis(), false);
-        mAdapter.add(task);
-
-        if(notifications)
-            remind(task);
-    }
-
     @Override
     protected void onResume() {
         PreferenceManager.getDefaultSharedPreferences(this)
@@ -227,6 +198,29 @@ public class MainActivity extends ActionBarActivity {
         //PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(mPrefsListener);
         datasource.close();
         super.onPause();
+    }
+
+    @Override
+    public void onDateSet(DatePickerDialog datePickerDialog, int year, int month, int day) {
+        this.nYear = year;
+        this.nMonth = month;
+        this.nDay = day;
+        Calendar calendar = Calendar.getInstance();
+        TimePickerDialog.newInstance(this, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show(getFragmentManager(), "timePicker");
+    }
+
+    @Override
+    public void onTimeSet(RadialPickerLayout radialPickerLayout, int hour, int minute) {
+        this.nHour = hour;
+        this.nMin = minute;
+
+        GregorianCalendar date = new GregorianCalendar(nYear, nMonth, nDay, nHour, nMin);
+        Task task = datasource.createTask(nTaskName.trim().length()>0 ? nTaskName : "Example task", date.getTimeInMillis(), false);
+        mAdapter.add(task);
+
+        if(notifications)
+            remind(task);
+
     }
 
 
@@ -248,60 +242,15 @@ public class MainActivity extends ActionBarActivity {
         @Override
         public void onClick(DialogInterface dialog, int position) {
 
-            if(position == DialogInterface.BUTTON_POSITIVE) {
+            if (position == DialogInterface.BUTTON_POSITIVE) {
                 Log.d("edit", String.valueOf(editName));
                 String value = editName.getText().toString();
-                ((MainActivity)getActivity()).onNameSet(value);
-                DialogFragment dateFragment = new DatePickerFragment();
-                dateFragment.show(getFragmentManager(), "datePicker");
+                ((MainActivity) getActivity()).onNameSet(value);
+                Calendar calendar = Calendar.getInstance();
+                DatePickerDialog.newInstance((DatePickerDialog.OnDateSetListener) getActivity(), calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show(getFragmentManager(), "datePicker");
             }
             dialog.dismiss();
         }
     }
-
-    public static class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
-
-        @Override
-        public Dialog onCreateDialog(final Bundle savedInstanceState) {
-
-            Calendar cal = Calendar.getInstance();
-            MyDatePickerDialog dlg = new MyDatePickerDialog(getActivity(), this, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
-
-            // Add Cancel button into dialog
-            dlg.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", (DialogInterface.OnClickListener) null);
-
-            return dlg;
-        }
-
-        @Override
-        public void onDateSet(final DatePicker view, final int year, final int month, final int day) {
-            ((MainActivity)getActivity()).onDateSet(year, month, day);
-
-            DialogFragment timeFragment = new TimePickerFragment();
-            timeFragment.show(getFragmentManager(), "timePicker");
-        }
-    }
-
-    public static class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
-
-        @Override
-        public Dialog onCreateDialog(final Bundle savedInstanceState) {
-
-            Calendar cal = Calendar.getInstance();
-            MyTimePickerDialog dlg = new MyTimePickerDialog(getActivity(), this, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE));
-
-            // Add Cancel button into dialog
-            dlg.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", (DialogInterface.OnClickListener) null);
-
-            return dlg;
-        }
-
-        @Override
-        public void onTimeSet(final TimePicker view, final int hour, final int minute) {
-            ((MainActivity)getActivity()).onTimeSet(hour, minute);
-        }
-    }
-
-
 }
 
