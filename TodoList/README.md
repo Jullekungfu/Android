@@ -6,7 +6,9 @@ Built using Android studio.
  * Material design pickers
    * ~~Switch layouts~~
    * Adapt to match app theme
- * More notification settings (sound etc.)
+ * More notification settings
+   * Sound
+   * LED color
  * Widget
  * Mark tasks as done/delete from notification
  * User feedback
