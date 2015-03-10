@@ -12,4 +12,12 @@
         android:entries="@array/pref_notificationTime_entries"
         android:entryValues="@array/pref_notificationTime_values"
         android:defaultValue="@string/pref_notificationTime_default" />
+    <ListPreference
+        android:dependency="pref_notifications"
+        android:key="pref_notification_led"
+        android:title="@string/pref_notificationLed"
+        android:dialogTitle="@string/pref_notificationLed"
+        android:entries="@array/pref_notificationLed_entries"
+        android:entryValues="@array/pref_notificationLed_values"
+        android:defaultValue="@string/pref_notificationLed_default" />
 </PreferenceScreen>
