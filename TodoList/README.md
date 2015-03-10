@@ -4,7 +4,11 @@ Built using Android studio.
 
 ## Todo
  * Material design pickers
- * More notification settings (sound etc.)
+   * ~~Switch layouts~~
+   * Adapt to match app theme
+ * More notification settings
+   * Sound
+   * LED color
  * Widget
  * Mark tasks as done/delete from notification
  * User feedback
