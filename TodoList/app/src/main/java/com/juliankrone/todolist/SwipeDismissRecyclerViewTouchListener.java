@@ -47,31 +47,6 @@ import java.util.List;
  * ensure that this {@link SwipeDismissRecyclerViewTouchListener} is paused during list view
  * scrolling.</p>
  *
- * <p>Example usage:</p>
- *
- * <pre>
- * SwipeDismissRecyclerViewTouchListener touchListener =
- *         new SwipeDismissRecyclerViewTouchListener(
- *                 listView,
- *                 new SwipeDismissRecyclerViewTouchListener.OnDismissCallback() {
- *                     public void onDismiss(ListView listView, int[] reverseSortedPositions) {
- *                         for (int position : reverseSortedPositions) {
- *                             adapter.remove(adapter.getItem(position));
- *                         }
- *                         adapter.notifyDataSetChanged();
- *                     }
- *                 });
- * listView.setOnTouchListener(touchListener);
- * listView.setOnScrollListener(touchListener.makeScrollListener());
- * </pre>
- *
- * <p>This class Requires API level 12 or later due to use of {@link
- * ViewPropertyAnimator}.</p>
- *
- * <p>For a generalized {@link View.OnTouchListener} that makes any view dismissable,
- * see {@link SwipeDismissTouchListener}.</p>
- *
- * @see SwipeDismissTouchListener
  */
 public class SwipeDismissRecyclerViewTouchListener implements View.OnTouchListener {
     // Cached ViewConfiguration and system-wide constant values
@@ -80,7 +55,6 @@ public class SwipeDismissRecyclerViewTouchListener implements View.OnTouchListen
     private int mMaxFlingVelocity;
     private long mAnimationTime;
 
-    // Fixed properties
     private RecyclerView mRecyclerView;
     private DismissCallbacks mCallbacks;
     private int mViewWidth = 1; // 1 and not 0 to prevent dividing by zero
@@ -178,8 +152,6 @@ public class SwipeDismissRecyclerViewTouchListener implements View.OnTouchListen
                 if (mPaused) {
                     return false;
                 }
-
-                // TODO: ensure this is a finger, and set a flag
 
                 // Find the child view that was touched (perform a hit test)
                 Rect rect = new Rect();
