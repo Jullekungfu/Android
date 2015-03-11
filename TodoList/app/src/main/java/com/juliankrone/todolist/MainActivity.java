@@ -15,12 +15,15 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.android.datetimepicker.date.DatePickerDialog;
 import com.android.datetimepicker.time.RadialPickerLayout;
@@ -80,6 +83,37 @@ public class MainActivity extends ActionBarActivity implements DatePickerDialog.
 
         mAdapter = new MyCustomAdapter(values, datasource, this);
         mRecyclerView.setAdapter(mAdapter);
+
+        SwipeDismissRecyclerViewTouchListener touchListener =
+                new SwipeDismissRecyclerViewTouchListener(
+                        mRecyclerView,
+                        new SwipeDismissRecyclerViewTouchListener.DismissCallbacks() {
+                            @Override
+                            public boolean canDismiss(int position) {
+                                return true;
+                            }
+                            @Override
+                            public void onDismiss(RecyclerView recyclerView, int[] reverseSortedPositions) {
+                                Toast.makeText(MainActivity.this, "Dismissed", Toast.LENGTH_SHORT).show();
+                                for (int position : reverseSortedPositions) {
+                                    mAdapter.remove(position);
+                                }
+                                // do not call notifyItemRemoved for every item, it will cause gaps on deleting items
+                                mAdapter.notifyDataSetChanged();
+                            }
+                        });
+
+        mRecyclerView.setOnTouchListener(touchListener);
+        mRecyclerView.setOnScrollListener(touchListener.makeScrollListener());
+
+
+        mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this,
+                new OnItemClickListener() {
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        mAdapter.toggleDone(position);
+                    }
+                }));
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         notifications = sharedPref.getBoolean(KEY_PREF_NOTIFICATIONS, false);
@@ -221,6 +255,34 @@ public class MainActivity extends ActionBarActivity implements DatePickerDialog.
         if(notifications)
             remind(task);
 
+    }
+
+    public interface OnItemClickListener {
+        public void onItemClick(View view, int position);
+    }
+    public class RecyclerItemClickListener implements RecyclerView.OnItemTouchListener {
+        private OnItemClickListener mListener;
+        GestureDetector mGestureDetector;
+        public RecyclerItemClickListener(Context context, OnItemClickListener listener) {
+            mListener = listener;
+            mGestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
+                @Override
+                public boolean onSingleTapUp(MotionEvent e) {
+                    return true;
+                }
+            });
+        }
+        @Override
+        public boolean onInterceptTouchEvent(RecyclerView view, MotionEvent e) {
+            View childView = view.findChildViewUnder(e.getX(), e.getY());
+            if (childView != null && mListener != null && mGestureDetector.onTouchEvent(e)) {
+                mListener.onItemClick(childView, view.getChildPosition(childView));
+            }
+            return false;
+        }
+        @Override
+        public void onTouchEvent(RecyclerView view, MotionEvent motionEvent) {
+        }
     }
 
 

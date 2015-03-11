@@ -48,6 +48,29 @@ public class MyCustomAdapter extends RecyclerView.Adapter<TaskHolder> {
         return 0;
     }
 
+    public void remove(int pos){
+        Task t = list.remove(pos);
+        dataSource.deleteTask(t);
+        ((MainActivity)context).remove(t);
+    }
+
+    public void toggleDone(int position){
+
+        Task newTask = list.remove(position);
+        dataSource.deleteTask(newTask);
+        ((MainActivity)context).remove(newTask);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, getItemCount());
+
+        String name = newTask.getName();
+        long date = newTask.getDeadline();
+        boolean done = !newTask.getDone();
+        Task nTask = dataSource.createTask(name, date*1000, done);
+        add(nTask);
+        if (!done)
+            ((MainActivity)context).remind(nTask);
+    }
+
     public ArrayList<Task> getActiveTasks(){
         ArrayList<Task> ds = new ArrayList<>();
         for(Task t : list){
@@ -80,37 +103,6 @@ public class MyCustomAdapter extends RecyclerView.Adapter<TaskHolder> {
         Date date = new Date(task.getDeadline()*1000);
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yy, HH:mm");
         holder.date.setText(format.format(date));
-
-        holder.dlt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Task tsk = list.remove(position);
-                dataSource.deleteTask(tsk);
-                ((MainActivity)context).remove(tsk);
-                notifyItemRemoved(position);
-                notifyItemRangeChanged(position, getItemCount());
-            }
-        });
-
-        holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Task newTask = list.remove(position);
-                dataSource.deleteTask(newTask);
-                ((MainActivity)context).remove(newTask);
-                notifyItemRemoved(position);
-                notifyItemRangeChanged(position, getItemCount());
-
-                String name = newTask.getName();
-                long date = newTask.getDeadline();
-                boolean done = !newTask.getDone();
-                Task nTask = dataSource.createTask(name, date*1000, done);
-                add(nTask);
-                if (!done)
-                    ((MainActivity)context).remind(nTask);
-            }
-        });
     }
 
     @Override
