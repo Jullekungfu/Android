@@ -1,5 +1,5 @@
 # TodoList (Deadlines)
-Android project, todo application with deadlines.
+Android project, todo application with deadlines.  
 Built using Android studio.
 
 ## Todo
