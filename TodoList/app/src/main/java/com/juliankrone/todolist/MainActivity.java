@@ -94,7 +94,6 @@ public class MainActivity extends ActionBarActivity implements DatePickerDialog.
                             }
                             @Override
                             public void onDismiss(RecyclerView recyclerView, int[] reverseSortedPositions) {
-                                Toast.makeText(MainActivity.this, "Dismissed", Toast.LENGTH_SHORT).show();
                                 for (int position : reverseSortedPositions) {
                                     mAdapter.remove(position);
                                 }
