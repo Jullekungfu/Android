@@ -12,6 +12,9 @@ Built using Android studio.
  * Widget
  * Mark tasks as done/delete from notification
  * User feedback
+ 
+## For release
+
  * Graphics
    * Highres icon  
      512 x 512  
