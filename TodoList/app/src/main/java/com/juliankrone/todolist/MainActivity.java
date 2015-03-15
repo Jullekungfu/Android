@@ -14,7 +14,6 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,7 +22,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.android.datetimepicker.date.DatePickerDialog;
 import com.android.datetimepicker.time.RadialPickerLayout;
@@ -31,7 +29,6 @@ import com.android.datetimepicker.time.TimePickerDialog;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class MainActivity extends ActionBarActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
@@ -197,8 +194,6 @@ public class MainActivity extends ActionBarActivity implements DatePickerDialog.
             AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
             alarmManager.set(AlarmManager.RTC_WAKEUP, nTime, pendingIntent);
-
-            Log.d("Alarm set at", new Date(nTime).toString());
         }
 
     }
@@ -304,7 +299,6 @@ public class MainActivity extends ActionBarActivity implements DatePickerDialog.
         public void onClick(DialogInterface dialog, int position) {
 
             if (position == DialogInterface.BUTTON_POSITIVE) {
-                Log.d("edit", String.valueOf(editName));
                 String value = editName.getText().toString();
                 ((MainActivity) getActivity()).onNameSet(value);
                 Calendar calendar = Calendar.getInstance();

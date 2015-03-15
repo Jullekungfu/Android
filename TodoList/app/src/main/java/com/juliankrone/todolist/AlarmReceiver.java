@@ -14,7 +14,6 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d("reciever", "recieved");
 
         String message = intent.getStringExtra ("message");
         String title = intent.getStringExtra ("title");
@@ -27,13 +26,13 @@ public class AlarmReceiver extends BroadcastReceiver {
         style.bigText(message);
 
         NotificationCompat.WearableExtender wearableExtender = new NotificationCompat.WearableExtender()
-                .setBackground(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher))
+                .setBackground(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_image_timer))
                 ;
 
         //Generate a notification with just short text and small icon
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
                 .setContentIntent(contentIntent)
-                .setSmallIcon(R.drawable.ic_launcher)
+                .setSmallIcon(R.drawable.ic_image_timer)
                 .setContentTitle(title)
                 .setContentText(message)
                 .setStyle(style)
